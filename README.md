@@ -18,6 +18,17 @@
 
 ---
 
+## ⚙️ 本 fork 配置（jane2003）
+
+> - 自动编译：每月 1 号 UTC 2:00（北京时间 10:00），St1 构建 rootfs 完成后自动触发 St2 打包。
+> - 目标设备：N1（s905d / Phicomm-N1），内核 6.6.y 自动匹配。
+> - 网络配置：static 固定 IP `192.168.2.2`，网关 `192.168.2.1`，DNS `223.5.5.5`。
+> - runner：ubuntu-24.04（ophub 打包脚本 `cp --update=none` 需 coreutils 9.x）。
+> - 手动触发：St1 / St2 均保留 workflow_dispatch，可改设备、网络模式。
+> - 固件下载：Releases 中的 `istoreos_24.10.8_amlogic_s905d_k*.img.gz` 为 N1 刷机文件。
+
+---
+
 ## 🤔 项目介绍 [![](https://img.shields.io/badge/-项目介绍-FFFFFF.svg)](#-项目介绍-)
 **iStoreOS** 目标是提供一个人人会用的路由兼轻 **NAS 系统** ，不管是作为路由还是 NAS，你都有相似的操作体验
 
