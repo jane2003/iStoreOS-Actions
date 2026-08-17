@@ -6,7 +6,7 @@ on:
       openwrt_board:
         description: "1、请选择设备型号"
         required: true
-        default: "s905d_s905x3_s912_s922x-ct2000"
+        default: "s905d"
         type: choice
         options:
           - a311d-oes_s922x-oes-plus_wxy-oect
@@ -252,7 +252,7 @@ on:
       network_settings:
         description: "4、请选择初始网络配置（先确保St1有执行）"
         required: true
-        default: "dhcp"
+        default: "static"
         type: choice
         options:
           - static
@@ -260,6 +260,10 @@ on:
 
 env:
   VERSION: 24.10.8
+  OPENWRT_BOARD: ${{ inputs.openwrt_board || 's905d' }}
+  OPENWRT_KERNEL: ${{ inputs.openwrt_kernel || '6.6.y' }}
+  OPENWRT_ROOTFS: ${{ inputs.openwrt_rootfs || 'RELEASE' }}
+  NETWORK_SETTINGS: ${{ inputs.network_settings || 'static' }}
 
 jobs:
   build:
@@ -273,7 +277,7 @@ jobs:
           echo "📦 正在下载预构建 rootfs"
           mkdir -p bin/targets/armsr/armv8
           curl -L -o bin/targets/armsr/armv8/openwrt-armvirt-64-default-rootfs.tar.gz \
-            https://github.com/${{ github.actor }}/iStoreOS-Actions/releases/download/iStoreOS-${{ env.VERSION }}-${{ inputs.openwrt_rootfs }}-${{ inputs.network_settings }}/istoreos-armsr-armv8-generic-rootfs.tar.gz
+            https://github.com/${{ github.repository_owner }}/iStoreOS-Actions/releases/download/iStoreOS-${{ env.VERSION }}-${{ env.OPENWRT_ROOTFS }}-${{ env.NETWORK_SETTINGS }}/istoreos-armsr-armv8-generic-rootfs.tar.gz
 
       - name: 🔍 查找rootfs.tar.gz所在路径
         id: find_rootfs
@@ -290,8 +294,8 @@ jobs:
         uses: ophub/amlogic-s9xxx-openwrt@main
         with:
           openwrt_path: ${{ steps.find_rootfs.outputs.file }}
-          openwrt_board: ${{ inputs.openwrt_board }}
-          openwrt_kernel: ${{ inputs.openwrt_kernel }}
+          openwrt_board: ${{ env.OPENWRT_BOARD }}
+          openwrt_kernel: ${{ env.OPENWRT_KERNEL }}
           auto_kernel: ${{ inputs.auto_kernel }}
           kernel_repo: ophub/kernel
           kernel_usage: stable
@@ -315,7 +319,7 @@ jobs:
       - name: 🚀 上传到 Release
         uses: softprops/action-gh-release@v2.2.1
         with:
-          tag_name: iStoreOS-${{ env.VERSION }}-${{ inputs.openwrt_rootfs }}-${{ inputs.network_settings }}
+          tag_name: iStoreOS-${{ env.VERSION }}-${{ env.OPENWRT_ROOTFS }}-${{ env.NETWORK_SETTINGS }}
           files: |
             ${{ env.PACKAGED_OUTPUTPATH }}/*.img.gz
         env:
